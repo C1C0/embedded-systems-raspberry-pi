@@ -1,1 +1,4 @@
 .vscode
+*.ar
+certs
+Arduino_Wemos

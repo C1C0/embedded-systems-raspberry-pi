@@ -1,9 +1,8 @@
 import paho.mqtt.client as mqtt
 import constants as C
 
-
 # The callback for when the client receives a connect response from the server.
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, idk):
     print("Connected with result code "+str(rc))
     print("Flags" + str(flags))
 
@@ -15,13 +14,14 @@ def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
     # more callbacks, etc
 
-client = mqtt.Client()
+client = mqtt.Client(client_id="", userdata=None, protocol=mqtt.MQTTv5)
 client.on_connect = on_connect
 client.on_message = on_message
 
-client.username_pw_set(username='admin',password='password')
+client.username_pw_set(username=C.MQTT_USER, password=C.MQTT_PASS)
+client.tls_set(tls_version=mqtt.ssl.PROTOCOL_TLS)
 
-client.connect(C.MQTT_SERVER, 1883, 60)
+client.connect(C.MQTT_SERVER, port=C.MQTT_PORT, keepalive=60)
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
