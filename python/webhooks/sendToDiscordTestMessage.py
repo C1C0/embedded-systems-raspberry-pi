@@ -3,7 +3,7 @@ import time
 
 code = """Wrong message, I meant to be nice. Just playing out with webhooks."""
 
-url = 'https://discord.com/api/webhooks/952836404549910579/zcZsyR_Z_f_DZklMTYZMuyCqu-NiPlFauWAeAd5bQTP68wVtewL23dhdS2PdJe986Q9D'
+url = 'https://maker.ifttt.com/trigger/test/json/with/key/ZKLn-fkqaQdl58NJvHNUP'
 myobj = {'content': code}
 
 while True:
