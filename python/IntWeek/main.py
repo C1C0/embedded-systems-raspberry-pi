@@ -70,10 +70,10 @@ class Main():
         if btn.debounced and btn.getButtonState() == GPIO.LOW and not self.mqttPub1.sent:
             self.mqttPub1.send(freq)
 
-    def listenToOtherCampuses(self, topic):
+    def listenToOtherCampuses(self, topic, speaker: Speaker):
         print("Starting Thread 2")
         # Set subscribers
-        self.mqttSub1 = MqttClient(topic, print)
+        self.mqttSub1 = MqttClient(topic, speaker.togglePlaying)
         self.mqttSub1.connect()
 
 

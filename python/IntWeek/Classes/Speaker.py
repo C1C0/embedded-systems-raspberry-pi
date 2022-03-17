@@ -30,7 +30,7 @@ class Speaker(Device):
         self.__freq = freq
         self.speaker.ChangeFrequency(freq)
 
-    def playTone(self, freq):
+    def playTone(self, freq:int):
         print("playing", freq)
         self.setFreq(freq)
 
@@ -40,6 +40,17 @@ class Speaker(Device):
         self.startPlaying()
         time.sleep(1)
         self.stopSound()
+
+    def togglePlaying(self, freq):
+        print("received freq: ", freq)
+
+        if type(freq) == str:
+            freq = int(freq)
+
+        if freq > 0:
+            self.playTone(freq)
+        else:
+            self.stopSound()
 
     def toon(self):
         pass
