@@ -52,8 +52,8 @@ class Main():
         self.speaker1.stopSound()
 
     def __playMe(self, freq):
-        self.mqttPub1.send(freq)
         self.speaker1.playTone(freq)
+        self.mqttPub1.send(freq)
 
     def listenToOtherCampuses(self, topic):
         print("Starting Thread 2")
