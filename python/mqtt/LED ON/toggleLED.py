@@ -1,5 +1,6 @@
 from ast import arg
 from cgitb import enable
+from types import FunctionType
 import RPi.GPIO as GPIO
 import time
 import paho.mqtt.client as mqtt
@@ -7,10 +8,11 @@ import constants as C
 import threading
 
 class MQTTC:
-    def __init__(self, callback, parameters) -> None:
+    def __init__(self, topic, callback = '', parameters = '') -> None:
         self.client = mqtt.Client(client_id="", userdata=None, protocol=mqtt.MQTTv5)
         self.__callback = callback
         self.__params = parameters
+        self.__topic = topic
 
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
@@ -24,13 +26,14 @@ class MQTTC:
         print("Flags" + str(flags))
 
         # on_connect() means that if we lose the connection and reconnect then subscriptions will be renewed.
-        client.subscribe(C.TOPICS_LED)
+        client.subscribe(self.__topic)
 
     # The callback for when a PUBLISH message is received from the server.
     def on_message(self, client, userdata, msg: mqtt.MQTTMessage):
         print(msg.topic+" "+str(msg.payload))
 
-        self.__callback(msg.payload.decode(), self.__params)
+        if type(self.__callback) == FunctionType:
+            self.__callback(msg.payload.decode(), self.__params)
 
     def connect(self) -> None:
         self.client.connect(C.MQTT_SERVER, port=C.MQTT_PORT, keepalive=60)
@@ -103,7 +106,11 @@ def setup() -> None:
     GPIO.setwarnings(False) 
 
 def enableMQtt(led :LED):
-    mqttClient = MQTTC(checkMqttSwitch, [led])
+    mqttClient = MQTTC(C.TOPICS_LED, checkMqttSwitch, [led])
+    mqttClient.connect()
+
+def measureTmpMQtt():
+    mqttClient = MQTTC(C.TOPICS_TEST)
     mqttClient.connect()
 
 if __name__ == "__main__":
@@ -112,8 +119,11 @@ if __name__ == "__main__":
     btn = Button(15)
     led = LED(2)
 
-    th = threading.Thread(target=enableMQtt, args=(led, ))
-    th.start()
+    thMqttLED = threading.Thread(target=enableMQtt, args=(led, ))
+    thMqttLED.start()
+
+    thMqttTemp = threading.Thread(target=measureTmpMQtt, args=())
+    thMqttTemp.start()
 
     while True:
         btn.checkPresstimeOfButton(led.toggle)
