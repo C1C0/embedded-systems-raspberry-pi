@@ -5,11 +5,11 @@ from gpiozero import Buzzer
 from Classes.Device import Device
 
 class Speaker(Device):
-    def __init__(self, BPin) -> None:
+    def __init__(self, BPin, initFreq = 1000) -> None:
         GPIO.setup(BPin, GPIO.OUT)
 
         self.pin = BPin
-        self.__freq = 1000
+        self.__freq = initFreq
 
         self.__setSpeaker()
 
@@ -35,6 +35,11 @@ class Speaker(Device):
         self.setFreq(freq)
 
         self.startPlaying()
+
+    def testSpeaker(self):
+        self.startPlaying()
+        time.sleep(1)
+        self.stopSound()
 
     def toon(self):
         pass
