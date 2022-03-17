@@ -30,13 +30,11 @@ class Main():
         self.speaker1.testSpeaker()
         self.speaker2.testSpeaker()
 
-        # Set subscribers
-        self.mqttSub1 = MqttClient(Config.topics.SOUND_VIBORG)
-
         # Set publisher
         self.mqttPub1 = MqttPublisher(Config.MQTT_CLIENT_ID, (Config.topics.SOUND_GREENA, Config.topics.SOUND_SKIVE))
 
         # Start threading
+        # Set SUbscriber
         self.thMqttSound = threading.Thread(target=self.listenToOtherCampuses, args=(Config.topics.SOUND_VIBORG,))
         self.thMqttSound.start()
 
