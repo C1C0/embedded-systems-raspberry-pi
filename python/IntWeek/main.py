@@ -47,10 +47,10 @@ class Main():
 
         self.btn1.checkPresstimeOfButton(
             self.__playMe, self.__stopMe, (660, self.btn1), (self.btn1, ))
-        self.btn2.checkPresstimeOfButton(
-            self.speaker2.playTone, self.speaker2.stopSound, (880,), ())
-        self.btn3.checkPresstimeOfButton(
-            self.speaker1.playTone, self.speaker1.stopSound, (1100,), ())
+        # self.btn2.checkPresstimeOfButton(
+        #     self.speaker2.playTone, self.speaker2.stopSound, (880,), ())
+        # self.btn3.checkPresstimeOfButton(
+        #     self.speaker1.playTone, self.speaker1.stopSound, (1100,), ())
 
     def stop(self):
         self.speaker1.stopSound()
@@ -58,7 +58,8 @@ class Main():
     def __stopMe(self, btn: Button): 
         self.speaker1.stopSound()
 
-        if btn.debounced and btn.getButtonState() and self.mqttPub1.sent:
+        if btn.debounced and btn.getButtonState() == GPIO.HIGH and self.mqttPub1.sent:
+            print("sending")
             self.mqttPub1.send(0)
 
         self.mqttPub1.sent = False
@@ -66,7 +67,7 @@ class Main():
     def __playMe(self, freq, btn: Button):
         self.speaker1.playTone(freq)
 
-        if btn.debounced and btn.getButtonState() and not self.mqttPub1.sent:
+        if btn.debounced and btn.getButtonState() == GPIO.LOW and not self.mqttPub1.sent:
             self.mqttPub1.send(freq)
 
     def listenToOtherCampuses(self, topic):

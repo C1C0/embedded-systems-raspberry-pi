@@ -27,12 +27,11 @@ class Button(Device):
 
             if GPIO.input(self.pin) != self.__lastButtonState:
                 self.__lastButtonState = GPIO.input(self.pin)
-                print("State", self.__lastButtonState)
                 if self.__lastButtonState == GPIO.LOW:
                     callback1(*vars1)
                 else:
-                    self.debounced = False
                     callback2(*vars2)
+                    self.debounced = False
 
     def getButtonState(self) -> bool:
         return GPIO.input(self.pin)
