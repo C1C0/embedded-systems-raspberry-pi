@@ -4,10 +4,10 @@ from config import Config
 import paho.mqtt.client as mqtt
 
 class MqttClient:
-    def __init__(self, topic, callback = '', parameters = '') -> None:
+    def __init__(self, topic, callback = None, *vars) -> None:
         self.client = mqtt.Client(client_id="", userdata=None, protocol=mqtt.MQTTv5)
         self.__callback = callback
-        self.__params = parameters
+        self.__params = vars
         self.__topic = topic
 
         self.client.on_connect = self.on_connect
@@ -29,7 +29,7 @@ class MqttClient:
         print(msg.topic+" "+str(msg.payload))
 
         if type(self.__callback) == FunctionType:
-            self.__callback(msg.payload.decode(), self.__params)
+            self.__callback(msg.payload.decode(), *self.__params)
 
     def connect(self) -> None:
         self.client.connect(Config.MQTT_SERVER, port=Config.MQTT_PORT, keepalive=60)

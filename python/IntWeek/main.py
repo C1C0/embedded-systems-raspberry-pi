@@ -37,7 +37,7 @@ class Main():
         self.mqttPub1 = MqttPublisher(Config.MQTT_CLIENT_ID, (Config.topics.SOUND_GREENA, Config.topics.SOUND_SKIVE))
 
         # Start threading
-        self.thMqttSound = threading.Thread(target=self.mqttSub1.connect, args=())
+        self.thMqttSound = threading.Thread(target=self.listenToOtherCampuses, args=(Config.topics.SOUND_VIBORG,))
         self.thMqttSound.start()
 
         print("Looping...")
@@ -52,7 +52,14 @@ class Main():
         self.speaker1.stopSound()
 
     def __playMe(self, freq):
+        self.mqttPub1.send(freq)
         self.speaker1.playTone(freq)
+
+    def listenToOtherCampuses(self, topic):
+        print("Starting Thread 2")
+        # Set subscribers
+        self.mqttSub1 = MqttClient(topic, print)
+        self.mqttSub1.connect()
 
 
 if __name__ == '__main__':

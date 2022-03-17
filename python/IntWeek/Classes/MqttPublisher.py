@@ -15,6 +15,7 @@ class MqttPublisher:
         print("Data sent mid: " + str(mid))
 
     def send(self, payload):
+        print("Sending: ", payload)
         self.client.connect(Config.MQTT_SERVER, Config.MQTT_PORT, 60)
 
         for topic in self.__topics:
