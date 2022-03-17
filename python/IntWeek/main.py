@@ -10,6 +10,7 @@ from Classes.Speaker import Speaker
 from Classes.MqttClient import MqttClient
 from Classes.MqttPublisher import MqttPublisher
 
+
 class Main():
     def __init__(self) -> None:
         GPIO.setmode(GPIO.BOARD)
@@ -31,27 +32,42 @@ class Main():
         self.speaker2.testSpeaker()
 
         # Set publisher
-        self.mqttPub1 = MqttPublisher(Config.MQTT_CLIENT_ID, (Config.topics.SOUND_GREENA, Config.topics.SOUND_SKIVE))
+        self.mqttPub1 = MqttPublisher(
+            Config.MQTT_CLIENT_ID, (Config.topics.SOUND_GREENA, Config.topics.SOUND_SKIVE))
 
         # Start threading
         # Set SUbscriber
-        self.thMqttSound = threading.Thread(target=self.listenToOtherCampuses, args=(Config.topics.SOUND_VIBORG,))
+        self.thMqttSound = threading.Thread(
+            target=self.listenToOtherCampuses, args=(Config.topics.SOUND_VIBORG,))
         self.thMqttSound.start()
 
         print("Looping...")
 
     def loop(self):
 
-        self.btn1.checkPresstimeOfButton(self.__playMe, self.speaker1.stopSound, (660,), ())
-        self.btn2.checkPresstimeOfButton(self.speaker2.playTone, self.speaker2.stopSound, (880,), ())
-        self.btn3.checkPresstimeOfButton(self.speaker1.playTone, self.speaker1.stopSound, (1100,), ())
+        self.btn1.checkPresstimeOfButton(
+            self.__playMe, self.__stopMe, (660, self.btn1), (self.btn1, ))
+        self.btn2.checkPresstimeOfButton(
+            self.speaker2.playTone, self.speaker2.stopSound, (880,), ())
+        self.btn3.checkPresstimeOfButton(
+            self.speaker1.playTone, self.speaker1.stopSound, (1100,), ())
 
     def stop(self):
         self.speaker1.stopSound()
 
-    def __playMe(self, freq):
+    def __stopMe(self, btn: Button): 
+        self.speaker1.stopSound()
+
+        if btn.debounced and btn.getButtonState() and self.mqttPub1.sent:
+            self.mqttPub1.send(0)
+
+        self.mqttPub1.sent = False
+
+    def __playMe(self, freq, btn: Button):
         self.speaker1.playTone(freq)
-        self.mqttPub1.send(freq)
+
+        if btn.debounced and btn.getButtonState() and not self.mqttPub1.sent:
+            self.mqttPub1.send(freq)
 
     def listenToOtherCampuses(self, topic):
         print("Starting Thread 2")

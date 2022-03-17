@@ -14,6 +14,8 @@ class Button(Device):
         self.__lastButtonState = initState
         self.__debounceDelay = debounceDelay
 
+        self.debounced = False
+
         GPIO.setup(self.pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     def checkPresstimeOfButton(self, callback1, callback2, vars1: tuple, vars2: tuple) -> None:
@@ -21,6 +23,7 @@ class Button(Device):
 
         if actualTime > self.__lastDebounceTimeMS + self.__debounceDelay:
             self.__lastDebounceTimeMS = actualTime
+            self.debounced = True
 
             if GPIO.input(self.pin) != self.__lastButtonState:
                 self.__lastButtonState = GPIO.input(self.pin)
@@ -28,7 +31,8 @@ class Button(Device):
                 if self.__lastButtonState == GPIO.LOW:
                     callback1(*vars1)
                 else:
+                    self.debounced = False
                     callback2(*vars2)
 
     def getButtonState(self) -> bool:
-        return self.__lastButtonState
+        return GPIO.input(self.pin)

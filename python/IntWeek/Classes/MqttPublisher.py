@@ -6,6 +6,8 @@ class MqttPublisher:
         self.client = mqtt.Client(client_id=clientID, userdata=None, protocol=mqtt.MQTTv5)
         self.__topics = topics
 
+        self.sent = False
+
         self.client.on_publish = self.__on_publish
         
         self.client.username_pw_set(username=Config.MQTT_USER, password=Config.MQTT_PASS)
@@ -17,6 +19,7 @@ class MqttPublisher:
     def send(self, payload):
         print("Sending: ", payload)
         self.client.connect(Config.MQTT_SERVER, Config.MQTT_PORT, 60)
+        self.sent = True
 
         for topic in self.__topics:
             self.client.publish(topic, payload=payload, qos=1)
