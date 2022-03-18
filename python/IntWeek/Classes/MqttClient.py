@@ -1,4 +1,4 @@
-from types import FunctionType
+from types import FunctionType, MethodType
 from config import Config
 
 import paho.mqtt.client as mqtt
@@ -28,8 +28,8 @@ class MqttClient:
     def on_message(self, client, userdata, msg: mqtt.MQTTMessage):
         print(msg.topic+" "+str(msg.payload))
 
-        if type(self.__callback) == FunctionType:
-            self.__callback(msg.payload.decode(), *self.__params)
+        if type(self.__callback) == MethodType:
+            self.__callback(msg.payload.decode())
 
     def connect(self) -> None:
         self.client.connect(Config.MQTT_SERVER, port=Config.MQTT_PORT, keepalive=60)

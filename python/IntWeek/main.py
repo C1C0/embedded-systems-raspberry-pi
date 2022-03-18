@@ -38,7 +38,7 @@ class Main():
         # Start threading
         # Set SUbscriber
         self.thMqttSound = threading.Thread(
-            target=self.listenToOtherCampuses, args=(Config.topics.SOUND_VIBORG,))
+            target=self.listenToOtherCampuses, args=(Config.topics.SOUND_VIBORG, self.speaker2))
         self.thMqttSound.start()
 
         print("Looping...")
@@ -47,15 +47,15 @@ class Main():
 
         self.btn1.checkPresstimeOfButton(
             self.__playMe, self.__stopMe, (660, self.btn1), (self.btn1, ))
-        # self.btn2.checkPresstimeOfButton(
-        #     self.speaker2.playTone, self.speaker2.stopSound, (880,), ())
-        # self.btn3.checkPresstimeOfButton(
-        #     self.speaker1.playTone, self.speaker1.stopSound, (1100,), ())
+        self.btn2.checkPresstimeOfButton(
+            self.__playMe, self.__stopMe, (880, self.btn2), (self.btn2, ))
+        self.btn3.checkPresstimeOfButton(
+            self.__playMe, self.__stopMe, (1100, self.btn3), (self.btn3, ))
 
     def stop(self):
         self.speaker1.stopSound()
 
-    def __stopMe(self, btn: Button): 
+    def __stopMe(self, btn: Button):
         self.speaker1.stopSound()
 
         if btn.debounced and btn.getButtonState() == GPIO.HIGH and self.mqttPub1.sent:
